@@ -1,8 +1,8 @@
 # Claude Code 状态栏主题
 
-> 为 Claude Code 定制的状态栏主题：仙侠古风 + 极客仪表盘 + 像素游戏
+> 为 Claude Code 定制的状态栏主题：仙侠古风 + 极客仪表盘 + 像素游戏 + 成本追踪
 
-![Themes](https://img.shields.io/badge/themes-3-blue)
+![Themes](https://img.shields.io/badge/themes-4-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## 主题预览
@@ -57,6 +57,20 @@
 - 角色称号（按时段变化：夜行者、早鸟、战士等）
 - 数据持久化保存
 
+### 成本追踪
+
+**文本预览：**
+```
+💰 $24.15  |  📊 13.6M tokens  |  ⏱️  2h 49m
+📝 命令: 1024次  19:58:48
+```
+
+**特色功能：**
+- 实时成本估算（基于 Token 使用）
+- Token 使用量显示
+- 会话时长追踪
+- 命令次数统计
+
 ## 快速安装
 
 ### 一键安装
@@ -101,7 +115,8 @@ cp -r sb ~/.claude/skills/
 /sb geek      # 极客仪表盘
 /sb xianxia   # 仙侠古风
 /sb pixel     # 像素游戏
-/sb g/x/p     # 简写
+/sb cost      # 成本追踪
+/sb g/x/p/c   # 简写
 ```
 
 ### 脚本切换
@@ -110,6 +125,7 @@ cp -r sb ~/.claude/skills/
 ~/.claude/switch-theme.sh geek     # 极客
 ~/.claude/switch-theme.sh xianxia  # 仙侠
 ~/.claude/switch-theme.sh pixel    # 像素
+~/.claude/switch-theme.sh cost     # 成本追踪
 ```
 
 ## 主题配置
@@ -158,6 +174,7 @@ claude-status-themes/
 ├── statusline-xianxia.sh    # 仙侠主题
 ├── statusline-geek.sh       # 极客主题
 ├── statusline-pixel.sh      # 像素游戏主题
+├── statusline-cost.sh       # 成本追踪主题
 ├── switch-theme.sh          # 切换脚本
 ├── spinner-verbs.json       # 过程状态词
 ├── sb/
