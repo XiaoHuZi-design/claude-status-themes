@@ -1,5 +1,5 @@
 #!/bin/bash
-# 像素游戏风状态栏 - Pixel Gaming Theme
+# 像素游戏风状态栏 - Pixel Gaming Theme (真实等级累积版)
 # 显示：等级、经验条、今日统计
 
 # 读取 JSON 输入
@@ -12,56 +12,112 @@ current_dir=$(echo "$input" | jq -r '.workspace.current_dir // empty')
 # 提取目录名
 dir_name=$(basename "$current_dir")
 
-# ===== 1. 时间 =====
+# ===== 数据文件 =====
+STATS_FILE="$HOME/.claude/pixel-stats.json"
+
+# 初始化数据文件
+if [ ! -f "$STATS_FILE" ]; then
+    cat > "$STATS_FILE" << 'EOF'
+{
+  "total_xp": 0,
+  "level": 1,
+  "commands_today": 0,
+  "last_date": "",
+  "achievements": []
+}
+EOF
+fi
+
+# 读取当前数据
+total_xp=$(jq -r '.total_xp' "$STATS_FILE")
+[ -z "$total_xp" ] && total_xp=0
+
+commands_today=$(jq -r '.commands_today' "$STATS_FILE")
+[ -z "$commands_today" ] && commands_today=0
+
+last_date=$(jq -r '.last_date' "$STATS_FILE")
+[ -z "$last_date" ] && last_date=""
+
+today=$(date +%Y-%m-%d)
+
+# 检查是否是新的一天，重置今日计数
+if [ "$last_date" != "$today" ]; then
+    commands_today=0
+fi
+
+# ===== 增加经验值 =====
+# 每次执行 +1 XP
+# 周末 +2 XP
+# 深夜(0-5点)或清晨(6-8点) +1 XP 额外奖励
+xp_gain=1
+day_of_week=$(date +%u)
+if [ $day_of_week -ge 6 ]; then
+    xp_gain=$((xp_gain + 1))  # 周末奖励
+fi
+
 hour=$(date +%H)
+if [ $hour -lt 6 ] || ([ $hour -ge 6 ] && [ $hour -lt 9 ]); then
+    xp_gain=$((xp_gain + 1))  # 深夜/清晨奖励
+fi
+
+# 更新数据
+total_xp=$((total_xp + xp_gain))
+commands_today=$((commands_today + 1))
+
+# ===== 计算等级（渐进式） =====
+# 等级1: 0-99 XP
+# 等级2: 100-399 XP (需要300)
+# 等级3: 400-899 XP (需要500)
+# 等级4: 900-1599 XP (需要700)
+# 简化公式: 每 100 XP 升 1 级
+level=$((total_xp / 100 + 1))
+
+# 计算当前等级的 XP 范围
+prev_level=$(((level - 1) * (level - 1) * 100))
+next_level=$((level * level * 100))
+current_level_xp=$((total_xp - prev_level))
+level_xp_needed=$((next_level - prev_level))
+
+# 计算百分比
+if [ $level_xp_needed -gt 0 ]; then
+    xp_percent=$((current_level_xp * 100 / level_xp_needed))
+else
+    xp_percent=100
+fi
+[ $xp_percent -gt 100 ] && xp_percent=100
+
+# 保存数据
+jq --arg xp "$total_xp" \
+   --arg lvl "$level" \
+   --arg cmd "$commands_today" \
+   --arg date "$today" \
+   '.total_xp = ($xp | tonumber) | .level = ($lvl | tonumber) | .commands_today = ($cmd | tonumber) | .last_date = $date' \
+   "$STATS_FILE" > "${STATS_FILE}.tmp" && mv "${STATS_FILE}.tmp" "$STATS_FILE"
+
+# ===== 1. 时间 =====
 minute=$(date +%M)
 time_str=$(date +%H:%M)
 
-# ===== 2. 等级系统 =====
-# 根据时间段计算等级（早起的鸟儿等级高）
-# 0-5点: Lv.10 (夜猫子奖励)
-# 6-8点: Lv.8 (早起鸟)
-# 9-12点: Lv.5
-# 13-18点: Lv.4
-# 19-23点: Lv.3
+# ===== 2. 角色称号（按时段）=====
 case $hour in
-    0|1|2|3|4|5) level=10; role="🦇 夜行者" ;;
-    6|7|8) level=8; role="🌅 早鸟" ;;
-    9|10|11) level=6; role="⚔️ 战士" ;;
-    12|13|14|15) level=5; role="🔨 工匠" ;;
-    16|17|18) level=4; role="📜 学者" ;;
-    19|20) level=3; role="🌙 守夜人" ;;
-    21|22|23) level=2; role="💤 修行中" ;;
+    0|1|2|3|4|5) role="🦇 夜行者" ;;
+    6|7|8) role="🌅 早鸟" ;;
+    9|10|11) role="⚔️ 战士" ;;
+    12|13|14|15) role="🔨 工匠" ;;
+    16|17|18) role="📜 学者" ;;
+    19|20) role="🌙 守夜人" ;;
+    21|22|23) role="💤 修行中" ;;
 esac
 
-# 根据星期调整等级（周末奖励）
-day_of_week=$(date +%u)
+# 周末标记
 if [ $day_of_week -ge 6 ]; then
-    level=$((level + 1))
     role="🎉 周末${role}"
 fi
 
-# ===== 3. 经验值计算 =====
-# 基于时间（每分钟+1 XP）
-current_minutes=$((hour * 60 + minute))
-xp=$((current_minutes % 1000))
+# ===== 3. 计算完成任务数 =====
+tasks_done=$((commands_today / 10))
 
-# 每级需要的经验
-xp_needed=$((level * 100))
-xp_percent=$((xp * 100 / xp_needed))
-[ $xp_percent -gt 100 ] && xp_percent=100
-
-# ===== 4. 今日统计 =====
-# 统计今日执行的命令数（从历史估算）
-today_commands=$(history | wc -l | tr -d ' ')
-# 限制在合理范围
-[ -z "$today_commands" ] && today_commands=0
-today_commands=$((today_commands % 100))
-
-# 计算完成任务数（估算）
-tasks_done=$((today_commands / 10))
-
-# ===== 5. Git 状态（游戏化表达）=====
+# ===== 4. Git 状态（游戏化表达）=====
 git_status=""
 cd "$current_dir" 2>/dev/null
 if git rev-parse --git-dir >/dev/null 2>&1; then
@@ -91,16 +147,16 @@ for ((i=0; i<filled; i++)); do bar+="█"; done
 for ((i=0; i<empty; i++)); do bar+="░"; done
 
 # ===== 构建输出 =====
-# 第一行：等级和时间
+# 第一行：等级、称号、时间
 output="${FG_GOLD}[Lv.${level}]${RESET} ${role}  ${DIM}${time_str}${RESET}"
 output+="\n"
 
 # 第二行：经验条
-output+="${xp_percent}%%  ${FG_GREEN}[${bar}]${RESET} ${xp}/${xp_needed}XP"
+output+="${xp_percent}%%  ${FG_GREEN}[${bar}]${RESET} ${current_level_xp}/${level_xp_needed}XP"
 output+="\n"
 
 # 第三行：今日统计
-output+="${FG_CYAN}🎯 今日:${RESET} ${tasks_done}任务  ${FG_ORANGE}⚔️ 执行:${RESET} ${today_commands}次"
+output+="${FG_CYAN}🎯 今日:${RESET} ${tasks_done}任务  ${FG_ORANGE}⚔️ 执行:${RESET} ${commands_today}次  ${FG_PURPLE}💎 总XP:${RESET} ${total_xp}"
 
 # Git 状态（如果有）
 if [ -n "$git_status" ]; then
