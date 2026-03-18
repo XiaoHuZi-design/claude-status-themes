@@ -1,8 +1,8 @@
 # Claude Code 状态栏主题
 
-> 为 Claude Code 定制的状态栏主题：仙侠古风 + 极客仪表盘
+> 为 Claude Code 定制的状态栏主题：仙侠古风 + 极客仪表盘 + 像素游戏
 
-![Themes](https://img.shields.io/badge/themes-2-blue)
+![Themes](https://img.shields.io/badge/themes-3-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## 主题预览
@@ -23,6 +23,17 @@
 - 内存使用率（按占用变色）
 - CPU 进度条（高于30%显示）
 - Node/Python 版本检测
+
+### 像素游戏
+```
+[Lv.3] 🌙 守夜人  19:00
+46%  [█████████░░░░░░░░░░░] 140/300XP
+🎯 今日: 5任务  ⚔️ 执行: 42次  💾 已存档
+```
+- 等级系统（按时段变化）
+- 经验值进度条
+- 今日任务/执行统计
+- 角色称号（夜行者、早鸟、战士等）
 
 ## 快速安装
 
@@ -65,17 +76,18 @@ cp -r sb ~/.claude/skills/
 
 重启 Claude Code 后：
 ```
-/sb geek      # 切换到极客仪表盘
-/sb xianxia   # 切换到仙侠古风
-/sb g         # 简写
-/sb x         # 简写
+/sb geek      # 极客仪表盘
+/sb xianxia   # 仙侠古风
+/sb pixel     # 像素游戏
+/sb g/x/p     # 简写
 ```
 
 ### 脚本切换
 
 ```bash
-~/.claude/switch-theme.sh geek
-~/.claude/switch-theme.sh xianxia
+~/.claude/switch-theme.sh geek     # 极客
+~/.claude/switch-theme.sh xianxia  # 仙侠
+~/.claude/switch-theme.sh pixel    # 像素
 ```
 
 ## 主题配置
@@ -96,6 +108,20 @@ cp -r sb ~/.claude/skills/
 | 内存 | 绿<50% / 黄<80% / 洋红≥80% |
 | CPU | 进度条，高于30%显示 |
 
+### 像素游戏
+
+| 时段 | 等级 | 称号 |
+|------|------|------|
+| 0-5点 | Lv.10 | 🦇 夜行者 |
+| 6-8点 | Lv.8 | 🌅 早鸟 |
+| 9-11点 | Lv.6 | ⚔️ 战士 |
+| 12-15点 | Lv.5 | 🔨 工匠 |
+| 16-18点 | Lv.4 | 📜 学者 |
+| 19-20点 | Lv.3 | 🌙 守夜人 |
+| 21-23点 | Lv.2 | 💤 修行中 |
+
+*周末等级+1，显示🎉标记*
+
 ## 文件结构
 
 ```
@@ -103,6 +129,7 @@ claude-status-themes/
 ├── README.md
 ├── statusline-xianxia.sh    # 仙侠主题
 ├── statusline-geek.sh       # 极客主题
+├── statusline-pixel.sh      # 像素游戏主题
 ├── switch-theme.sh          # 切换脚本
 ├── spinner-verbs.json       # 过程状态词
 ├── sb/

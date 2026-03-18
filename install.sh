@@ -56,6 +56,7 @@ echo "📌 使用方法："
 echo "   重启 Claude Code 后使用:"
 echo "   /sb geek      - 极客仪表盘"
 echo "   /sb xianxia   - 仙侠古风"
+echo "   /sb pixel     - 像素游戏"
 echo
 echo "   或直接执行:"
 echo "   ~/.claude/switch-theme.sh geek"

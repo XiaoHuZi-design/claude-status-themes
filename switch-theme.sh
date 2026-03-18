@@ -1,6 +1,6 @@
 #!/bin/bash
 # 状态栏主题切换脚本
-# 用法: ~/.claude/switch-theme.sh [xianxia|geek]
+# 用法: ~/.claude/switch-theme.sh [xianxia|geek|pixel]
 
 THEME="${1:-geek}"
 SETTINGS_FILE="$HOME/.claude/settings.json"
@@ -14,10 +14,15 @@ case "$THEME" in
         COMMAND="bash ~/.claude/statusline-geek.sh"
         NAME="极客仪表盘"
         ;;
+    pixel|像素|p|游戏)
+        COMMAND="bash ~/.claude/statusline-pixel.sh"
+        NAME="像素游戏"
+        ;;
     *)
-        echo "用法: $0 [xianxia|geek]"
+        echo "用法: $0 [xianxia|geek|pixel]"
         echo "  xianxia, 仙侠, x  - 仙侠古风主题"
         echo "  geek, 极客, g     - 极客仪表盘主题"
+        echo "  pixel, 像素, p    - 像素游戏主题"
         exit 1
         ;;
 esac
