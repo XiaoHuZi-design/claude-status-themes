@@ -59,6 +59,9 @@
 
 ### 成本追踪
 
+**效果展示：**
+![成本追踪](cost.png)
+
 **文本预览：**
 ```
 💰 $24.15  |  📊 13.6M tokens  |  ⏱️  2h 49m
@@ -171,6 +174,7 @@ claude-status-themes/
 ├── xianxia.png              # 仙侠主题截图
 ├── geek.png                 # 极客主题截图
 ├── pixel.png                # 像素主题截图
+├── cost.png                 # 成本追踪截图
 ├── statusline-xianxia.sh    # 仙侠主题
 ├── statusline-geek.sh       # 极客主题
 ├── statusline-pixel.sh      # 像素游戏主题
