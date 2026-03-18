@@ -29,7 +29,7 @@
 ### 一键安装
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/yourname/claude-status-themes/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/XiaoHuZi-design/claude-status-themes/main/install.sh | bash
 ```
 
 ### 手动安装
